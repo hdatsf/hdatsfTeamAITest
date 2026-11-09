@@ -9,8 +9,9 @@ TeamAI 的**被管理项目**示例：接入 TeamAI 插件，从管理端同步�
 - 被管理项目自动接入控制平面（`teamai register`）
 - 一条命令同步/更新团队技能（`teamai sync`）
 - 版本与校验和锁定（`.teamai/lock.json`）
-- 技能使用上报，管理端按成员、项目、技能聚合（`teamai track`）
+- 技能使用上报由 **agent 的真实行为**驱动：Kimi Code hook 在读取技能文件时自动上报，`teamai use` 把“读取 + 上报”合成一个动作
 - Git 拉取后自动同步（可选 hooks）
+- 管理端按成员、项目、技能、来源聚合使用情况
 
 ## 快速开始
 
@@ -46,14 +47,30 @@ npm run teamai:skills    # 查看本地技能清单
 
 同步成功后，管理端「项目」页会出现 `hdatsfTeamAITest`，「技能库」会显示各项目的版本覆盖情况。
 
-### 3. 上报使用
+### 3. 在 agent 里使用技能
+
+推荐让 agent 直接运行 `teamai use`：它打印技能内容并同时上报，读取与记录是一次原子操作。
 
 ```bash
-npm run teamai:track -- --skill code-review --action "评审了 src/greet.mjs"
-npm run teamai:track -- --skill api-design --action "设计了新接口" --user alice
+npm run teamai:use -- code-review
+npm run teamai:use -- api-design --user alice
 ```
 
-看板每 15 秒自动刷新，「使用情况」页会显示成员、技能热度与项目分布。
+还可以安装 Kimi Code 的自动上报 hook（一次性、用户级，写入 `~/.kimi-code/config.toml`）：
+
+```bash
+npm run teamai:agent-hooks
+```
+
+安装后，agent 用 `Read` 工具读取 `.teamai/skills/<slug>/SKILL.md` 时由 `PostToolUse` hook 自动上报，每个会话每个技能记一次，失败不阻塞 agent。移除：
+
+```bash
+npm run teamai:agent-hooks-remove
+```
+
+> hook 只存在于用户级配置，无法随项目下发；新会话启动后生效。`teamai track` 仍保留，仅用于事后补录或第三方 agent 兜底。
+
+看板每 15 秒自动刷新，「使用情况」页会显示成员、技能热度、项目分布，以及每条流水的来源（Agent 自动 / CLI / 手动补录）。
 
 ### 4. 一键演示
 
@@ -61,7 +78,7 @@ npm run teamai:track -- --skill api-design --action "设计了新接口" --user 
 npm run teamai:demo
 ```
 
-等价于执行一次 `sync` 和一次 `track`。
+等价于执行一次 `sync` 和一次 `use`。
 
 ## 目录结构
 
@@ -74,7 +91,7 @@ npm run teamai:demo
 │   └── lock.json            # 已安装版本与 SHA-256（生成物）
 ├── scripts/
 │   ├── install-teamai.mjs   # 安装/升级插件
-│   └── demo.mjs             # sync + track 演示
+│   └── demo.mjs             # sync + use 演示
 ├── src/                     # 示例业务代码
 ├── test/
 └── AGENTS.md                # AI 助手使用团队技能的约定

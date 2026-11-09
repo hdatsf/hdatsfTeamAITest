@@ -1,10 +1,10 @@
 ---
 name: Code Review
 slug: code-review
-version: 1.2.1
+version: 1.2.3
 description: 结构化代码评审清单，覆盖正确性、可读性、安全性与可验证性。
 tags: quality, review, git
-published_at: 2026-11-09T03:06:55.002Z
+published_at: 2026-11-09T03:48:14.621Z
 published_by: teamai-admin
 ---
 

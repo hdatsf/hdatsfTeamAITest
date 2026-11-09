@@ -14,8 +14,11 @@
     "teamai:sync": "node .teamai/bin/teamai.mjs sync",
     "teamai:status": "node .teamai/bin/teamai.mjs status",
     "teamai:skills": "node .teamai/bin/teamai.mjs skills",
+    "teamai:use": "node .teamai/bin/teamai.mjs use",
     "teamai:track": "node .teamai/bin/teamai.mjs track",
     "teamai:hooks": "node .teamai/bin/teamai.mjs install-hooks",
+    "teamai:agent-hooks": "node .teamai/bin/teamai.mjs install-agent-hooks",
+    "teamai:agent-hooks-remove": "node .teamai/bin/teamai.mjs uninstall-agent-hooks",
     "teamai:demo": "node scripts/demo.mjs"
   }
 }

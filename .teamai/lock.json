@@ -1,7 +1,7 @@
 {
   "serverUrl": "http://127.0.0.1:4310",
   "projectId": "hdatsfTeamAITest",
-  "syncedAt": "2026-11-09T03:07:01.795Z",
+  "syncedAt": "2026-11-09T03:48:17.083Z",
   "pluginVersion": "0.1.0",
   "skills": [
     {
@@ -11,8 +11,8 @@
     },
     {
       "slug": "code-review",
-      "version": "1.2.1",
-      "sha256": "b1b72fe48f371d2c4c0902f985e649930657f558a40b11db0ef160680a352e80"
+      "version": "1.2.3",
+      "sha256": "cd9ee8243c3d90739e5f6085a94090cd89de97332f2c6df9da1b28a5089f7d2c"
     },
     {
       "slug": "incident-postmortem",

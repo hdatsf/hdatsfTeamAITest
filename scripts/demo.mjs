@@ -19,10 +19,9 @@ function run(args) {
 console.log('1/2 同步团队技能…');
 run(['sync']);
 
-console.log('\n2/2 上报一次技能使用…');
+console.log('\n2/2 读取技能并上报一次使用…');
 run([
-  'track',
-  '--skill',
+  'use',
   'code-review',
   '--action',
   '演示：使用 Code Review 技能检查 src/greet.mjs',
