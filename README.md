@@ -41,6 +41,7 @@ npm run dev
 ```bash
 npm run teamai:install   # 从控制平面下载插件到 .teamai/bin
 npm run teamai:sync      # 拉取技能到 .teamai/skills
+npm run teamai:hooks     # 一次性：git pull/checkout 后自动同步
 npm run teamai:status    # 确认全部 current
 npm run teamai:skills    # 查看本地技能清单
 ```
