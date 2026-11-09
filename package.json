@@ -1,0 +1,21 @@
+{
+  "name": "hdatsf-teamai-test",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "TeamAI 被管理项目：同步团队技能并回传使用情况。",
+  "engines": {
+    "node": ">=18.17.0"
+  },
+  "scripts": {
+    "start": "node src/index.mjs",
+    "test": "node --test",
+    "teamai:install": "node scripts/install-teamai.mjs",
+    "teamai:sync": "node .teamai/bin/teamai.mjs sync",
+    "teamai:status": "node .teamai/bin/teamai.mjs status",
+    "teamai:skills": "node .teamai/bin/teamai.mjs skills",
+    "teamai:track": "node .teamai/bin/teamai.mjs track",
+    "teamai:hooks": "node .teamai/bin/teamai.mjs install-hooks",
+    "teamai:demo": "node scripts/demo.mjs"
+  }
+}
