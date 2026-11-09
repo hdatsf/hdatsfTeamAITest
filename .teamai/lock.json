@@ -1,8 +1,8 @@
 {
   "serverUrl": "http://127.0.0.1:4310",
   "projectId": "hdatsfTeamAITest",
-  "syncedAt": "2026-11-09T03:48:17.083Z",
-  "pluginVersion": "0.1.0",
+  "syncedAt": "2026-11-09T06:38:16.932Z",
+  "pluginVersion": "0.2.0",
   "skills": [
     {
       "slug": "api-design",

@@ -22,3 +22,4 @@ for (const skill of lock.skills) {
   console.log(`  - ${skill.slug} v${skill.version}`);
 }
 console.log('\n技能文件位于 .teamai/skills/<slug>/SKILL.md');
+console.log('Kimi Code 自动发现 .kimi-code/skills（sync 生成的投影）');

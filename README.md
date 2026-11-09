@@ -8,8 +8,9 @@ TeamAI 的**被管理项目**示例：接入 TeamAI 插件，从管理端同步�
 
 - 被管理项目自动接入控制平面（`teamai register`）
 - 一条命令同步/更新团队技能（`teamai sync`）
+- 技能使用上报由 **agent 的真实行为**驱动：Kimi Code 通过 `/skill:<slug>` 调用团队技能，或用 Read 读取技能文件时，hook 自动上报
+- 技能自动出现在 Kimi Code 的技能列表（`.kimi-code/skills` 投影），无需手工指定路径
 - 版本与校验和锁定（`.teamai/lock.json`）
-- 技能使用上报由 **agent 的真实行为**驱动：Kimi Code hook 在读取技能文件时自动上报，`teamai use` 把“读取 + 上报”合成一个动作
 - Git 拉取后自动同步（可选 hooks）
 - 管理端按成员、项目、技能、来源聚合使用情况
 
@@ -40,22 +41,24 @@ npm run dev
 
 ```bash
 npm run teamai:install   # 从控制平面下载插件到 .teamai/bin
-npm run teamai:sync      # 拉取技能到 .teamai/skills
+npm run teamai:sync      # 拉取技能到 .teamai/skills，并投影到 .kimi-code/skills
 npm run teamai:hooks     # 一次性：git pull/checkout 后自动同步
-npm run teamai:status    # 确认全部 current
-npm run teamai:skills    # 查看本地技能清单
+npm run teamai:status    # 确认技能与 Kimi 投影全部 current
+npm run teamai:skills    # 查看本地技能清单与投影状态
 ```
 
-同步成功后，管理端「项目」页会出现 `hdatsfTeamAITest`，「技能库」会显示各项目的版本覆盖情况。
+同步成功后，管理端「项目」页会出现 `hdatsfTeamAITest`，「技能库」会显示各项目的版本覆盖情况。Kimi Code 新会话会直接发现这些技能。
 
 ### 3. 在 agent 里使用技能
 
-推荐让 agent 直接运行 `teamai use`：它打印技能内容并同时上报，读取与记录是一次原子操作。
+Kimi Code 中直接调用技能（如 `/skill:code-review`），hook 会自动上报，不需要额外命令。其他 agent 或 CLI 可运行：
 
 ```bash
 npm run teamai:use -- code-review
 npm run teamai:use -- api-design --user alice
 ```
+
+`teamai use` 打印技能内容并同时上报；若同一技能刚被 hook 自动上报，2 分钟内不会重复记录（`--force` 可强制）。
 
 还可以安装 Kimi Code 的自动上报 hook（一次性、用户级，写入 `~/.kimi-code/config.toml`）：
 
@@ -63,7 +66,7 @@ npm run teamai:use -- api-design --user alice
 npm run teamai:agent-hooks
 ```
 
-安装后，agent 用 `Read` 工具读取 `.teamai/skills/<slug>/SKILL.md` 时由 `PostToolUse` hook 自动上报，每个会话每个技能记一次，失败不阻塞 agent。移除：
+安装后，agent 通过 Skill 调用 `/skill:<slug>`，或读取 `.teamai/skills/<slug>/SKILL.md` / `.kimi-code/skills/<slug>/SKILL.md` 时由 `PostToolUse` hook 自动上报，每个会话每个技能记一次，失败不阻塞 agent。移除：
 
 ```bash
 npm run teamai:agent-hooks-remove
@@ -71,7 +74,7 @@ npm run teamai:agent-hooks-remove
 
 > hook 只存在于用户级配置，无法随项目下发；新会话启动后生效。`teamai track` 仍保留，仅用于事后补录或第三方 agent 兜底。
 
-看板每 15 秒自动刷新，「使用情况」页会显示成员、技能热度、项目分布，以及每条流水的来源（Agent 自动 / CLI / 手动补录）。
+看板每 15 秒自动刷新，「使用情况」页会显示成员、技能热度、项目分布，以及每条流水的来源（Agent 技能调用 / Agent 读取 / CLI / 手动补录）。
 
 ### 4. 一键演示
 
@@ -88,8 +91,10 @@ npm run teamai:demo
 ├── .teamai/
 │   ├── config.json          # 控制平面地址、项目 ID、接入令牌
 │   ├── bin/teamai.mjs       # 管理端分发的插件（勿手改）
-│   ├── skills/<slug>/SKILL.md  # 同步下来的团队技能
+│   ├── skills/<slug>/SKILL.md  # 权威技能副本
 │   └── lock.json            # 已安装版本与 SHA-256（生成物）
+├── .kimi-code/
+│   └── skills/<slug>/SKILL.md  # Kimi Code 投影（sync 生成，勿手改）
 ├── scripts/
 │   ├── install-teamai.mjs   # 安装/升级插件
 │   └── demo.mjs             # sync + use 演示
@@ -102,7 +107,7 @@ npm run teamai:demo
 
 1. 在管理端「技能库」发布新版本（或在管理仓 `skills/*.md` 修改后重新播种）。
 2. 本项目执行 `npm run teamai:sync`。
-3. 插件对比远端 `sha256`，只重写变化的 `SKILL.md`，更新 `lock.json`。
+3. 插件对比远端 `sha256`，只重写变化的 `.teamai/skills/<slug>/SKILL.md`，同步生成 `.kimi-code/skills` 投影，并更新 `lock.json`。
 4. 同步事件回传，管理端立即显示新版本与采用率。
 
 也可以安装 Git hooks，在 `git pull` / `git checkout` 后自动同步：
